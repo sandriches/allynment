@@ -3,8 +3,7 @@ import { chunkMarkdown } from "./markdown.js";
 import { extractClaims, type ExtractOptions, type ExtractResult } from "./extract.js";
 
 export { chunkMarkdown, type SpecChunk } from "./markdown.js";
-export { extractClaims, buildRequest, type ExtractOptions, type ExtractResult } from "./extract.js";
-export { ClaimCache, NoopClaimCache } from "./cache.js";
+export { extractClaims, buildRequest, claimCacheKey, type ExtractOptions, type ExtractResult } from "./extract.js";
 export { PROMPT_VERSION } from "./prompt.js";
 
 /** Read a spec file, chunk it, and extract claims. */

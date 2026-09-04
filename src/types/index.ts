@@ -131,6 +131,8 @@ export interface Verdict {
   confidence: number;
   /** True if the claim was listed in .specdriftignore. */
   suppressed: boolean;
+  /** Short model explanation, for logs. Not shown in the default report. */
+  rationale?: string;
 }
 
 /** A code fact with no confirmed or drifted claim referring to it. */

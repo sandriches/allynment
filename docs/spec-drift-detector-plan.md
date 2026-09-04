@@ -75,9 +75,11 @@ Two LLM stages means the same inputs can produce different reports, and a flappi
 "Narrow candidates first, then compare" needs a concrete mechanism so that misses are debuggable rather than mysterious.
 
 1. **Lexical pass** — tokenise the claim text, match against type names, field names, argument names and enum values in the schema. Score by overlap. Cheap and usually enough for API-shaped claims.
-2. **Embedding pass** — embed every code fact once (cached) and the claim; take top-k by cosine similarity. Catches paraphrases the lexical pass misses ("customer" vs `User`).
+2. **Fuzzy pass** — character-trigram cosine similarity between claim identifiers and fact names, behind a small `Similarity` interface. Catches casing, plurals and near-spellings. It does **not** catch synonyms ("customer" vs `User`). Anthropic has no embeddings endpoint, so a hosted embedder (for example Voyage) would mean a second provider and key; defer that until the real-world trial shows synonym misses actually happen.
 3. **Union, dedupe, cap** — pass at most N candidates (start with 8) to the LLM comparison step.
-4. **Log the candidate list** for every claim in verbose mode. When the matcher misses, the answer to "why" should be in the log, not in someone's head.
+4. **Log the candidate list** for every claim in verbose mode, with the reasons each candidate scored. When the matcher misses, the answer to "why" should be in the log, not in someone's head.
+
+Scoring notes learned from the fixtures: a full-name match must outrank a camelCase-part match (otherwise `OrderStatus` beats `Order.status` for a claim about status), and the large exact-id bonus applies only to qualified identifiers like `Order.status`, never to a bare type name (otherwise a parent type always outranks its own fields). Candidate cards sent to the comparator include context: a type lists its fields, a field its siblings and arguments, an enum value the whole enum. That is what lets the comparator report a missing member as drift against the parent.
 
 ## Handling accepted differences
 
@@ -166,13 +168,13 @@ The MVP checklist above is grouped by component. This section orders the work in
 - The eval test (`test/claims-eval.test.ts`) skips a fixture with no recordings and says how to record them, so the suite stays green on a fresh clone without an API key.
 - **Done when:** `spec-drift claims --spec fixtures/orders-api/spec.md` prints claims, and a test asserts every claim in `expected.json` is found with the correct `claim_type`. Missed or mis-typed claims are the first real signal about prompt quality.
 
-### Step 4 — Retrieval
+### Step 4 — Retrieval ✅
 - Lexical scorer over fact IDs and names. Embedding index over facts, cached to disk.
 - `retrieve(claim, facts) -> CodeFact[]` capped at N.
 - Test: for every checkable claim in the fixtures, the correct fact appears in the candidate list. This is a recall test and it should be at or near 100 percent before moving on, because the comparator cannot recover from a retrieval miss.
 - **Done when:** the recall test is green and `--verbose` prints candidates per claim.
 
-### Step 5 — Comparator
+### Step 5 — Comparator ✅ (code) / ⏳ (recordings + eval bar)
 - Comparison prompt takes one claim and its candidates, returns classification plus a one-sentence "what differs" for drifted.
 - Not-checkable claims skip the LLM entirely and are classified by `claim_type`.
 - Verdict cache keyed by claim hash plus candidate hashes.

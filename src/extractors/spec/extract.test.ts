@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { StaticLlmClient } from "../../llm/mock.js";
-import { ClaimCache } from "./cache.js";
+import { JsonFileCache } from "../../cache.js";
 import { extractClaims, parseResponse, toClaim } from "./extract.js";
 import type { SpecChunk } from "./markdown.js";
 
@@ -85,7 +85,7 @@ describe("extractClaims", () => {
       calls++;
       return goodResponse;
     });
-    const cache = new ClaimCache(dir);
+    const cache = new JsonFileCache(dir);
     const first = await extractClaims([chunk], { llm, model: "m", cache });
     const second = await extractClaims([chunk], { llm, model: "m", cache });
     expect(calls).toBe(1);
@@ -100,7 +100,7 @@ describe("extractClaims", () => {
       calls++;
       return goodResponse;
     });
-    const cache = new ClaimCache(dir);
+    const cache = new JsonFileCache(dir);
     await extractClaims([chunk], { llm, model: "m", cache });
     await extractClaims([{ ...chunk, body: chunk.body + "\nMore." }], { llm, model: "m", cache });
     expect(calls).toBe(2);
@@ -112,7 +112,7 @@ describe("extractClaims", () => {
       calls++;
       return goodResponse;
     });
-    const cache = new ClaimCache(dir);
+    const cache = new JsonFileCache(dir);
     await extractClaims([chunk], { llm, model: "a", cache });
     await extractClaims([chunk], { llm, model: "b", cache });
     expect(calls).toBe(2);

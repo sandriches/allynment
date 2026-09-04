@@ -1,7 +1,7 @@
 import type { LlmClient, LlmRequest } from "../../llm/client.js";
-import { shortHash } from "../../llm/hash.js";
+import { sha256, shortHash } from "../../llm/hash.js";
+import { JsonFileCache, NoopCache } from "../../cache.js";
 import { CLAIM_TYPES, type Claim, type ClaimType } from "../../types/index.js";
-import { ClaimCache, NoopClaimCache } from "./cache.js";
 import type { SpecChunk } from "./markdown.js";
 import { EXTRACT_PURPOSE, PROMPT_VERSION, RESPONSE_SCHEMA, SYSTEM_PROMPT, buildUserPrompt } from "./prompt.js";
 
@@ -9,7 +9,7 @@ export interface ExtractOptions {
   llm: LlmClient;
   /** Model name, used only as part of the cache key. The LlmClient decides what actually runs. */
   model: string;
-  cache?: ClaimCache;
+  cache?: JsonFileCache;
   /** Called after each section is processed, for progress output. */
   onSection?: (info: { chunk: SpecChunk; claims: number; cached: boolean; inputTokens: number; outputTokens: number }) => void;
 }
@@ -43,15 +43,23 @@ export function buildRequest(chunk: SpecChunk): LlmRequest {
   };
 }
 
+/**
+ * Cache key for one section. Prompt version, model, heading path and body text.
+ * The file path is deliberately excluded so a renamed spec still hits.
+ */
+export function claimCacheKey(model: string, chunk: SpecChunk): string {
+  return sha256(PROMPT_VERSION, model, chunk.headingPath.join(" "), chunk.body);
+}
+
 export async function extractClaims(chunks: SpecChunk[], opts: ExtractOptions): Promise<ExtractResult> {
-  const cache = opts.cache ?? new NoopClaimCache();
+  const cache = opts.cache ?? new NoopCache();
   const claims: Claim[] = [];
   const usage = { inputTokens: 0, outputTokens: 0, llmCalls: 0, cachedSections: 0 };
 
   for (const chunk of chunks) {
     if (chunk.body.trim() === "") continue;
 
-    const key = ClaimCache.key(PROMPT_VERSION, opts.model, chunk);
+    const key = claimCacheKey(opts.model, chunk);
     let raw = cache.get<RawClaim[]>(key);
     let cached = true;
     let inputTokens = 0;

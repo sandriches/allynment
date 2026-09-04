@@ -3,8 +3,10 @@ import { Command, Option } from "commander";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { extractFactsFromSchemaFile } from "../extractors/code/index.js";
-import { ClaimCache, NoopClaimCache, extractClaimsFromSpecFile } from "../extractors/spec/index.js";
+import { JsonFileCache, NoopCache } from "../cache.js";
+import { extractClaimsFromSpecFile } from "../extractors/spec/index.js";
 import { createLlmClient, type LlmFactoryOptions } from "../llm/index.js";
+import { runPipeline } from "../pipeline.js";
 import { renderClaims } from "../report/claims.js";
 import { renderFacts } from "../report/facts.js";
 
@@ -65,7 +67,7 @@ addLlmOptions(
     .option("--json", "Emit JSON instead of a human-readable listing"),
 ).action(async (opts: LlmCliOptions & { spec: string; json?: boolean }) => {
   const { client, model } = buildLlm(opts);
-  const cache = opts.cache ? new ClaimCache(join(opts.cacheDir, "claims")) : new NoopClaimCache();
+  const cache = opts.cache ? new JsonFileCache(join(opts.cacheDir, "claims")) : new NoopCache();
   const result = await extractClaimsFromSpecFile(opts.spec, {
     llm: client,
     model,
@@ -90,7 +92,7 @@ addLlmOptions(
 addLlmOptions(
   program
     .command("record-fixtures")
-    .description("Run claim extraction over every fixture spec and record the LLM responses under <fixture>/recordings.")
+    .description("Run the full pipeline over every fixture and record the LLM responses under <fixture>/recordings.")
     .option("--fixtures <dir>", "Fixtures directory", "fixtures")
     .option("--only <name>", "Only record the named fixture"),
 ).action(async (opts: LlmCliOptions & { fixtures: string; only?: string }) => {
@@ -100,33 +102,68 @@ addLlmOptions(
     .filter((p) => !opts.only || p.endsWith(opts.only));
 
   for (const dir of dirs) {
-    const expected = JSON.parse(readFileSync(join(dir, "expected.json"), "utf8")) as { spec: string };
-    const specPath = resolve(dir, expected.spec);
+    const expected = JSON.parse(readFileSync(join(dir, "expected.json"), "utf8")) as { spec: string; schema: string };
     const recordingsDir = join(dir, "recordings");
     const { client, model } = buildLlm({ ...opts, llm: "anthropic", record: true, recordings: recordingsDir });
     process.stderr.write(`Recording ${dir} (${model})\n`);
-    const result = await extractClaimsFromSpecFile(specPath, {
+    const result = await runPipeline({
+      specPath: resolve(dir, expected.spec),
+      schemaPath: resolve(dir, expected.schema),
       llm: client,
       model,
-      cache: new NoopClaimCache(),
       onSection: (s) => {
         const heading = s.chunk.headingPath.join(" > ") || "(preamble)";
-        process.stderr.write(`  ${heading}: ${s.claims} claims (${s.inputTokens} in / ${s.outputTokens} out)\n`);
+        process.stderr.write(`  extract ${heading}: ${s.claims} claims (${s.inputTokens} in / ${s.outputTokens} out)\n`);
+      },
+      onClaim: (t) => {
+        process.stderr.write(`  compare [${t.claim.claimType}] ${t.claim.text} -> ${t.verdict.classification} (${t.decidedBy})\n`);
       },
     });
-    process.stderr.write(`  ${result.claims.length} claims, ${result.usage.inputTokens} input tokens, ${result.usage.outputTokens} output tokens\n`);
+    const u = result.usage;
+    process.stderr.write(
+      `  ${result.report.claims.length} claims; extract ${u.extract.inputTokens}/${u.extract.outputTokens} tokens, compare ${u.compare.inputTokens}/${u.compare.outputTokens} tokens\n`,
+    );
   }
 });
 
-program
-  .command("check")
-  .description("Run the full pipeline and report drift. Not implemented yet.")
-  .requiredOption("--spec <path>", "Path to a Markdown spec")
-  .requiredOption("--schema <path>", "Path to a GraphQL SDL file")
-  .action(() => {
-    process.stderr.write("spec-drift check: not implemented yet (build step 6)\n");
-    process.exitCode = 2;
+addLlmOptions(
+  program
+    .command("check")
+    .description("Run the full pipeline and report drift. Only --json output is implemented so far (build step 6 adds the terminal report).")
+    .requiredOption("--spec <path>", "Path to a Markdown spec")
+    .requiredOption("--schema <path>", "Path to a GraphQL SDL file")
+    .option("--json", "Emit the full report as JSON")
+    .option("--limit <n>", "Maximum retrieval candidates per claim", "8"),
+).action(async (opts: LlmCliOptions & { spec: string; schema: string; json?: boolean; limit: string }) => {
+  const { client, model } = buildLlm(opts);
+  const result = await runPipeline({
+    specPath: opts.spec,
+    schemaPath: opts.schema,
+    llm: client,
+    model,
+    retrievalLimit: Number(opts.limit),
+    ...(opts.cache ? { cacheDir: opts.cacheDir } : {}),
+    ...(opts.verbose
+      ? {
+          onSection: (s) => {
+            const heading = s.chunk.headingPath.join(" > ") || "(preamble)";
+            process.stderr.write(`extract ${heading}: ${s.claims} claims (${s.cached ? "cache" : `${s.inputTokens} in / ${s.outputTokens} out`})\n`);
+          },
+          onClaim: (t) => {
+            process.stderr.write(`compare [${t.claim.claimType}] ${t.claim.text}\n`);
+            process.stderr.write(`  candidates: ${t.candidates.map((c) => `${c.fact.id}(${c.score.toFixed(1)})`).join(", ") || "(none)"}\n`);
+            process.stderr.write(`  -> ${t.verdict.classification} (${t.decidedBy}, conf ${t.verdict.confidence.toFixed(2)})${t.verdict.difference ? `: ${t.verdict.difference}` : ""}\n`);
+          },
+        }
+      : {}),
   });
+  if (opts.json) {
+    process.stdout.write(JSON.stringify(result.report, null, 2) + "\n");
+  } else {
+    process.stdout.write(JSON.stringify(result.report.summary, null, 2) + "\n");
+    process.stderr.write("spec-drift check: human-readable report is build step 6; pass --json for the full report\n");
+  }
+});
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   const msg = err instanceof Error ? err.message : String(err);
