@@ -1,0 +1,106 @@
+{
+  "$schema": "../expected.schema.json",
+  "description": "Spec that matches the schema exactly. Any drifted or unmatched result here is a false positive.",
+  "spec": "spec.md",
+  "schema": "../orders-api/schema.graphql",
+  "claims": [
+    {
+      "text": "Every customer has a User account",
+      "claimType": "type_exists",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User"]
+    },
+    {
+      "text": "User.email is required",
+      "claimType": "field_nullability",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User.email"]
+    },
+    {
+      "text": "User.name is optional",
+      "claimType": "field_nullability",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User.name"]
+    },
+    {
+      "text": "User.legacyId is deprecated",
+      "claimType": "deprecation",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User.legacyId"]
+    },
+    {
+      "text": "There is an Order type",
+      "claimType": "type_exists",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order"]
+    },
+    {
+      "text": "Order has a status field",
+      "claimType": "field_exists",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order.status"]
+    },
+    {
+      "text": "Order.total is a Money value",
+      "claimType": "field_type",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order.total"]
+    },
+    {
+      "text": "Order.placedAt is a DateTime",
+      "claimType": "field_type",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order.placedAt"]
+    },
+    {
+      "text": "Order.shippingAddress is optional",
+      "claimType": "field_nullability",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order.shippingAddress"]
+    },
+    {
+      "text": "OrderStatus includes PENDING, PAID, SHIPPED, DELIVERED and CANCELLED",
+      "claimType": "enum_values",
+      "headingPath": ["Orders API", "Orders", "Order status"],
+      "expected": "confirmed",
+      "factIds": [
+        "OrderStatus.PENDING",
+        "OrderStatus.PAID",
+        "OrderStatus.SHIPPED",
+        "OrderStatus.DELIVERED",
+        "OrderStatus.CANCELLED"
+      ]
+    },
+    {
+      "text": "The orders query accepts first, after and status arguments",
+      "claimType": "field_args",
+      "headingPath": ["Orders API", "Querying orders"],
+      "expected": "confirmed",
+      "factIds": ["Query.orders(first)", "Query.orders(after)", "Query.orders(status)"]
+    },
+    {
+      "text": "Clients place an order with the placeOrder mutation",
+      "claimType": "field_exists",
+      "headingPath": ["Orders API", "Mutations"],
+      "expected": "confirmed",
+      "factIds": ["Mutation.placeOrder"]
+    },
+    {
+      "text": "Clients cancel an order with the cancelOrder mutation",
+      "claimType": "field_exists",
+      "headingPath": ["Orders API", "Mutations"],
+      "expected": "confirmed",
+      "factIds": ["Mutation.cancelOrder"]
+    }
+  ],
+  "undocumentedIncludes": ["Order.customer", "OrderConnection.totalCount", "Query.me"]
+}

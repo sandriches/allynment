@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://spec-drift.dev/schemas/expected.json",
+  "title": "Spec Drift fixture expectations",
+  "description": "Labelled expected output for one fixture. Drives the eval harness.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["spec", "schema", "claims"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "description": { "type": "string" },
+    "spec": {
+      "type": "string",
+      "description": "Path to the spec Markdown file, relative to this file."
+    },
+    "schema": {
+      "type": "string",
+      "description": "Path to the GraphQL SDL file, relative to this file."
+    },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/expectedClaim" }
+    },
+    "undocumentedIncludes": {
+      "type": "array",
+      "description": "Fact IDs that must appear in the undocumented list. Not exhaustive.",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  },
+  "definitions": {
+    "claimType": {
+      "type": "string",
+      "enum": [
+        "type_exists",
+        "field_exists",
+        "field_type",
+        "field_nullability",
+        "field_args",
+        "enum_values",
+        "deprecation",
+        "behaviour",
+        "limit_or_policy"
+      ]
+    },
+    "classification": {
+      "type": "string",
+      "enum": ["confirmed", "drifted", "unmatched", "not_checkable"]
+    },
+    "expectedClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text", "claimType", "headingPath", "expected"],
+      "properties": {
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Canonical wording of the claim. The extractor's output is matched to this semantically, not byte-for-byte."
+        },
+        "claimType": { "$ref": "#/definitions/claimType" },
+        "headingPath": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1,
+          "description": "Heading path in the spec where the claim lives."
+        },
+        "expected": { "$ref": "#/definitions/classification" },
+        "factIds": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true,
+          "description": "Fact IDs the comparator should cite. Required for confirmed and drifted."
+        },
+        "differenceHint": {
+          "type": "string",
+          "description": "Gist of what the comparator's difference text should say. Only for drifted."
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "expected": { "enum": ["confirmed", "drifted"] } } },
+          "then": { "required": ["factIds"], "properties": { "factIds": { "type": "array", "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "expected": { "const": "drifted" } } },
+          "then": { "required": ["differenceHint"] }
+        },
+        {
+          "if": { "properties": { "expected": { "enum": ["unmatched", "not_checkable"] } } },
+          "then": { "not": { "required": ["factIds"] } }
+        },
+        {
+          "if": { "properties": { "expected": { "const": "not_checkable" } } },
+          "then": { "properties": { "claimType": { "enum": ["behaviour", "limit_or_policy"] } } }
+        }
+      ]
+    }
+  }
+}

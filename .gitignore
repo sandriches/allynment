@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.spec-drift/
+.DS_Store
+*.log

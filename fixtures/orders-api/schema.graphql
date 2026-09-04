@@ -1,0 +1,109 @@
+"""
+ISO-8601 timestamp, e.g. 2026-09-04T12:00:00Z
+"""
+scalar DateTime
+
+"""
+A customer account.
+"""
+type User {
+  id: ID!
+  email: String!
+  name: String
+  """
+  Orders placed by this user, newest first.
+  """
+  orders(first: Int = 20, after: String, status: OrderStatus): OrderConnection!
+  legacyId: String @deprecated(reason: "Use id instead")
+}
+
+"""
+A single purchase made by a user.
+"""
+type Order {
+  id: ID!
+  status: OrderStatus!
+  total: Money!
+  placedAt: DateTime!
+  items: [LineItem!]!
+  note: String
+  shippingAddress: Address
+  customer: User!
+}
+
+type LineItem {
+  id: ID!
+  sku: String!
+  quantity: Int!
+  unitPrice: Money!
+}
+
+type Address {
+  line1: String!
+  line2: String
+  city: String!
+  postcode: String!
+  country: String!
+}
+
+"""
+Amount in minor units (pence, cents) with an ISO-4217 currency code.
+"""
+type Money {
+  amount: Int!
+  currency: String!
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+type OrderConnection {
+  edges: [OrderEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type OrderEdge {
+  cursor: String!
+  node: Order!
+}
+
+type PageInfo {
+  hasNextPage: Boolean!
+  endCursor: String
+}
+
+input LineItemInput {
+  sku: String!
+  quantity: Int!
+}
+
+input AddressInput {
+  line1: String!
+  line2: String
+  city: String!
+  postcode: String!
+  country: String!
+}
+
+input PlaceOrderInput {
+  items: [LineItemInput!]!
+  shippingAddress: AddressInput!
+  note: String
+}
+
+type Query {
+  me: User
+  order(id: ID!): Order
+  orders(first: Int = 20, after: String, status: OrderStatus): OrderConnection!
+}
+
+type Mutation {
+  placeOrder(input: PlaceOrderInput!): Order!
+  cancelOrder(id: ID!): Order!
+}

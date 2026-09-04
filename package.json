@@ -1,0 +1,34 @@
+{
+  "name": "spec-drift",
+  "version": "0.1.0",
+  "description": "Diffs a living spec against a codebase and reports where they have drifted apart.",
+  "type": "module",
+  "bin": {
+    "spec-drift": "./dist/cli/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.20.1",
+    "tsx": "^4.23.13",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "commander": "^13.1.0",
+    "graphql": "^16.14.2"
+  }
+}

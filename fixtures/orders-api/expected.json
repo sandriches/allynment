@@ -1,0 +1,156 @@
+{
+  "$schema": "../expected.schema.json",
+  "description": "Realistic spec with genuine drift of every checkable claim type, plus behavioural claims that must land in not_checkable.",
+  "spec": "spec.md",
+  "schema": "schema.graphql",
+  "claims": [
+    {
+      "text": "Every customer has a User account",
+      "claimType": "type_exists",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User"]
+    },
+    {
+      "text": "User.email is required",
+      "claimType": "field_nullability",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User.email"]
+    },
+    {
+      "text": "User.name is optional",
+      "claimType": "field_nullability",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User.name"]
+    },
+    {
+      "text": "User.legacyId is deprecated",
+      "claimType": "deprecation",
+      "headingPath": ["Orders API", "Users"],
+      "expected": "confirmed",
+      "factIds": ["User.legacyId"]
+    },
+    {
+      "text": "There is an Order type",
+      "claimType": "type_exists",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order"]
+    },
+    {
+      "text": "Order has a status field",
+      "claimType": "field_exists",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order.status"]
+    },
+    {
+      "text": "Order.total is a Money value",
+      "claimType": "field_type",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "confirmed",
+      "factIds": ["Order.total"]
+    },
+    {
+      "text": "Order.placedAt is a String",
+      "claimType": "field_type",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "drifted",
+      "factIds": ["Order.placedAt"],
+      "differenceHint": "placedAt is DateTime, not String"
+    },
+    {
+      "text": "Order.shippingAddress is required and cannot be null",
+      "claimType": "field_nullability",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "drifted",
+      "factIds": ["Order.shippingAddress"],
+      "differenceHint": "shippingAddress is nullable (Address, not Address!)"
+    },
+    {
+      "text": "Order exposes a trackingNumber field",
+      "claimType": "field_exists",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "drifted",
+      "factIds": ["Order"],
+      "differenceHint": "Order has no trackingNumber field"
+    },
+    {
+      "text": "Order.note is deprecated",
+      "claimType": "deprecation",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "drifted",
+      "factIds": ["Order.note"],
+      "differenceHint": "note is not marked @deprecated"
+    },
+    {
+      "text": "An order may contain at most 50 line items",
+      "claimType": "limit_or_policy",
+      "headingPath": ["Orders API", "Orders"],
+      "expected": "not_checkable"
+    },
+    {
+      "text": "OrderStatus includes PENDING, PAID, SHIPPED, DELIVERED and CANCELLED",
+      "claimType": "enum_values",
+      "headingPath": ["Orders API", "Orders", "Order status"],
+      "expected": "confirmed",
+      "factIds": [
+        "OrderStatus.PENDING",
+        "OrderStatus.PAID",
+        "OrderStatus.SHIPPED",
+        "OrderStatus.DELIVERED",
+        "OrderStatus.CANCELLED"
+      ]
+    },
+    {
+      "text": "OrderStatus includes REFUNDED",
+      "claimType": "enum_values",
+      "headingPath": ["Orders API", "Orders", "Order status"],
+      "expected": "drifted",
+      "factIds": ["OrderStatus"],
+      "differenceHint": "OrderStatus has no REFUNDED value"
+    },
+    {
+      "text": "A Refund type records money returned to the customer",
+      "claimType": "type_exists",
+      "headingPath": ["Orders API", "Orders", "Refunds"],
+      "expected": "unmatched"
+    },
+    {
+      "text": "The orders query accepts first and after arguments for cursor-based pagination",
+      "claimType": "field_args",
+      "headingPath": ["Orders API", "Querying orders"],
+      "expected": "confirmed",
+      "factIds": ["Query.orders(first)", "Query.orders(after)"]
+    },
+    {
+      "text": "The orders query can be filtered by customerId",
+      "claimType": "field_args",
+      "headingPath": ["Orders API", "Querying orders"],
+      "expected": "drifted",
+      "factIds": ["Query.orders"],
+      "differenceHint": "orders has no customerId argument; available filters are first, after, status"
+    },
+    {
+      "text": "Users can cancel an order at any point until it has shipped",
+      "claimType": "behaviour",
+      "headingPath": ["Orders API", "Behaviour"],
+      "expected": "not_checkable"
+    },
+    {
+      "text": "Customers receive a confirmation email when an order is shipped",
+      "claimType": "behaviour",
+      "headingPath": ["Orders API", "Behaviour"],
+      "expected": "not_checkable"
+    }
+  ],
+  "undocumentedIncludes": [
+    "Mutation.cancelOrder",
+    "Mutation.placeOrder",
+    "Order.customer",
+    "OrderConnection.totalCount",
+    "Query.me"
+  ]
+}
