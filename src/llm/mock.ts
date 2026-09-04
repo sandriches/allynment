@@ -24,6 +24,11 @@ export class MockLlmClient implements LlmClient {
     return join(this.dir, req.purpose, `${MockLlmClient.keyFor(req)}.json`);
   }
 
+  /** True if a recording exists for this exact request. */
+  has(req: LlmRequest): boolean {
+    return existsSync(this.pathFor(req));
+  }
+
   async complete(req: LlmRequest): Promise<LlmResponse> {
     const p = this.pathFor(req);
     if (!existsSync(p)) {

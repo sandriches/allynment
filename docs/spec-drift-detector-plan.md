@@ -65,7 +65,7 @@ Anything the LLM cannot fit into the first seven lands in `behaviour` or `limit_
 Two LLM stages means the same inputs can produce different reports, and a flapping report is worse than no report once this runs in CI. Rules from day one:
 
 - Pin the model version explicitly in config; never rely on a floating alias.
-- Temperature 0 for extraction and comparison.
+- Structured outputs (`output_config.format` with a JSON schema) so responses are always schema-valid JSON. Current Claude models reject the `temperature` parameter, so determinism comes from a pinned model, a fixed prompt, a fixed effort level, and caching, not from sampling settings.
 - Cache extracted claims keyed by a content hash of the spec section. Re-run extraction only for sections whose text changed.
 - Cache comparator verdicts keyed by (claim hash, candidate code-fact hashes).
 - JSON output is sorted and stable so two runs on identical inputs produce a byte-identical report. Diffing reports is a feature, not an accident.
@@ -158,11 +158,12 @@ The MVP checklist above is grouped by component. This section orders the work in
 - Snapshot test against both fixture schemas.
 - **Done when:** `spec-drift facts --schema fixtures/orders-api/schema.graphql` prints the fact list and the snapshot test is green. No LLM involved.
 
-### Step 3 — Spec extractor
+### Step 3 — Spec extractor ✅ (code) / ⏳ (recordings)
 - `remark` parses `spec.md`, chunks by heading, records line ranges.
 - Extraction prompt asks for `Claim[]` per chunk, constrained to the taxonomy, with source location and confidence.
 - Content-hash cache in `.spec-drift/cache/`.
-- Record real LLM responses for the fixtures once, commit them, and drive tests through `MockLlmClient`.
+- Record real LLM responses for the fixtures once, commit them, and drive tests through `MockLlmClient`. Recordings live in `fixtures/<name>/recordings/` and are keyed on the full request, so any prompt change requires re-recording with `spec-drift record-fixtures`.
+- The eval test (`test/claims-eval.test.ts`) skips a fixture with no recordings and says how to record them, so the suite stays green on a fresh clone without an API key.
 - **Done when:** `spec-drift claims --spec fixtures/orders-api/spec.md` prints claims, and a test asserts every claim in `expected.json` is found with the correct `claim_type`. Missed or mis-typed claims are the first real signal about prompt quality.
 
 ### Step 4 — Retrieval
