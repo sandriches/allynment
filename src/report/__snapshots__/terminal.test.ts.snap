@@ -1,0 +1,52 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`renderReport > matches the snapshot 1`] = `
+"spec-drift report
+  spec:    fixtures/orders-api/spec.md
+  schema:  fixtures/orders-api/schema.graphql
+  model:   claude-opus-5  (prompts extract v1, compare v1)
+  ignore:  .specdriftignore
+
+2 drifted  ·  1 unmatched  ·  5 undocumented  ·  1 not checkable  ·  1 confirmed  ·  2 suppressed
+
+DRIFTED (2)
+  ✗ Order.placedAt is a String
+      fixtures/orders-api/spec.md:12  (Orders API > Orders)
+      schema: placedAt is DateTime!, not String.
+      facts:  Order.placedAt @ fixtures/orders-api/schema.graphql:27
+      confidence 0.85
+
+  ✗ Order exposes a trackingNumber field
+      fixtures/orders-api/spec.md:14  (Orders API > Orders)
+      schema: Order has no trackingNumber field; its fields are id, status, total, placedAt, items, note, shippingAddress, customer.
+      facts:  Order @ fixtures/orders-api/schema.graphql:20
+      confidence 0.85
+
+UNMATCHED (1)
+  Claims about things the schema does not have at all. Either unimplemented, or the spec is out of date.
+
+  ? A Refund type records money returned to the customer
+      fixtures/orders-api/spec.md:16  (Orders API > Refunds)
+
+UNDOCUMENTED (5)
+  Schema types and fields no claim refers to. The spec does not describe these.
+
+  • Mutation: cancelOrder, placeOrder
+  • Order: customer
+  • PageInfo: endCursor
+
+NOT CHECKABLE (1)
+  Behavioural and policy claims. A GraphQL schema cannot confirm or refute these; they need a different source.
+
+  – Users can cancel an order at any point until it has shipped  [behaviour]
+
+CONFIRMED (1)
+  ✓ Order has a status field  Order.status
+
+SUPPRESSED (2)
+  Listed in .specdriftignore. Still present in the JSON output.
+
+  ~ drifted: OrderStatus includes REFUNDED  # refunds ship in Q4
+  ~ undocumented: OrderConnection.totalCount  # internal
+"
+`;

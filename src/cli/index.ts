@@ -6,9 +6,10 @@ import { extractFactsFromSchemaFile } from "../extractors/code/index.js";
 import { JsonFileCache, NoopCache } from "../cache.js";
 import { extractClaimsFromSpecFile } from "../extractors/spec/index.js";
 import { createLlmClient, type LlmFactoryOptions } from "../llm/index.js";
+import { applyIgnore, loadIgnore } from "../ignore.js";
 import { runPipeline } from "../pipeline.js";
-import { renderClaims } from "../report/claims.js";
-import { renderFacts } from "../report/facts.js";
+import { renderClaims, renderFacts, renderJson, renderReport } from "../report/index.js";
+import { writeFileSync } from "node:fs";
 
 const program = new Command();
 
@@ -129,41 +130,101 @@ addLlmOptions(
 addLlmOptions(
   program
     .command("check")
-    .description("Run the full pipeline and report drift. Only --json output is implemented so far (build step 6 adds the terminal report).")
+    .description("Run the full pipeline: extract claims from the spec, compare them against the schema, and report drift.")
     .requiredOption("--spec <path>", "Path to a Markdown spec")
     .requiredOption("--schema <path>", "Path to a GraphQL SDL file")
-    .option("--json", "Emit the full report as JSON")
-    .option("--limit <n>", "Maximum retrieval candidates per claim", "8"),
-).action(async (opts: LlmCliOptions & { spec: string; schema: string; json?: boolean; limit: string }) => {
-  const { client, model } = buildLlm(opts);
-  const result = await runPipeline({
-    specPath: opts.spec,
-    schemaPath: opts.schema,
-    llm: client,
-    model,
-    retrievalLimit: Number(opts.limit),
-    ...(opts.cache ? { cacheDir: opts.cacheDir } : {}),
-    ...(opts.verbose
-      ? {
-          onSection: (s) => {
-            const heading = s.chunk.headingPath.join(" > ") || "(preamble)";
-            process.stderr.write(`extract ${heading}: ${s.claims} claims (${s.cached ? "cache" : `${s.inputTokens} in / ${s.outputTokens} out`})\n`);
-          },
-          onClaim: (t) => {
-            process.stderr.write(`compare [${t.claim.claimType}] ${t.claim.text}\n`);
-            process.stderr.write(`  candidates: ${t.candidates.map((c) => `${c.fact.id}(${c.score.toFixed(1)})`).join(", ") || "(none)"}\n`);
-            process.stderr.write(`  -> ${t.verdict.classification} (${t.decidedBy}, conf ${t.verdict.confidence.toFixed(2)})${t.verdict.difference ? `: ${t.verdict.difference}` : ""}\n`);
-          },
-        }
-      : {}),
-  });
-  if (opts.json) {
-    process.stdout.write(JSON.stringify(result.report, null, 2) + "\n");
-  } else {
-    process.stdout.write(JSON.stringify(result.report.summary, null, 2) + "\n");
-    process.stderr.write("spec-drift check: human-readable report is build step 6; pass --json for the full report\n");
-  }
-});
+    .option("--json", "Emit the full report as JSON on stdout instead of the terminal report")
+    .option("--out <path>", "Also write the full JSON report to this file")
+    .option("--ignore <path>", "Ignore file of accepted differences", ".specdriftignore")
+    .option("--no-ignore", "Do not apply any ignore file")
+    .option("--limit <n>", "Maximum retrieval candidates per claim", "8")
+    .option("--hide-confirmed", "List confirmed claims as a count only")
+    .option("--hide-undocumented", "List undocumented facts as a count only")
+    .option("--rationale", "Show the model's rationale under each drifted or unmatched claim")
+    .option("--no-color", "Disable ANSI colour")
+    .addOption(
+      new Option("--fail-on <level>", "Exit non-zero when unsuppressed items of this severity or worse exist")
+        .choices(["none", "drifted", "unmatched"])
+        .default("drifted"),
+    ),
+).action(
+  async (
+    opts: LlmCliOptions & {
+      spec: string;
+      schema: string;
+      json?: boolean;
+      out?: string;
+      ignore: string | false;
+      limit: string;
+      hideConfirmed?: boolean;
+      hideUndocumented?: boolean;
+      rationale?: boolean;
+      color: boolean;
+      failOn: "none" | "drifted" | "unmatched";
+    },
+  ) => {
+    const { client, model } = buildLlm(opts);
+    const result = await runPipeline({
+      specPath: opts.spec,
+      schemaPath: opts.schema,
+      llm: client,
+      model,
+      retrievalLimit: Number(opts.limit),
+      ...(opts.cache ? { cacheDir: opts.cacheDir } : {}),
+      ...(opts.verbose
+        ? {
+            onSection: (s) => {
+              const heading = s.chunk.headingPath.join(" > ") || "(preamble)";
+              process.stderr.write(`extract ${heading}: ${s.claims} claims (${s.cached ? "cache" : `${s.inputTokens} in / ${s.outputTokens} out`})\n`);
+            },
+            onClaim: (t) => {
+              process.stderr.write(`compare [${t.claim.claimType}] ${t.claim.text}\n`);
+              process.stderr.write(`  candidates: ${t.candidates.map((c) => `${c.fact.id}(${c.score.toFixed(1)})`).join(", ") || "(none)"}\n`);
+              process.stderr.write(`  -> ${t.verdict.classification} (${t.decidedBy}, conf ${t.verdict.confidence.toFixed(2)})${t.verdict.difference ? `: ${t.verdict.difference}` : ""}\n`);
+            },
+          }
+        : {}),
+    });
+
+    let report = result.report;
+    if (opts.ignore !== false && existsSync(opts.ignore)) {
+      const ignore = loadIgnore(opts.ignore);
+      for (const e of ignore.errors) process.stderr.write(`${opts.ignore}:${e.line}: ${e.error}\n`);
+      const applied = applyIgnore(report, ignore);
+      report = applied.report;
+      for (const r of applied.expiredRules) process.stderr.write(`${opts.ignore}:${r.line}: rule expired on ${r.until}, no longer applied\n`);
+      for (const r of applied.unusedRules) process.stderr.write(`${opts.ignore}:${r.line}: rule "${r.kind}:${r.pattern}" matched nothing\n`);
+    }
+
+    if (opts.verbose) {
+      const u = result.usage;
+      process.stderr.write(
+        `extract: ${u.extract.llmCalls} calls, ${u.extract.cachedSections} cached; compare: ${u.compare.llmCalls} calls, ${u.compare.cachedVerdicts} cached, ${u.compare.ruleVerdicts} by rule; ` +
+          `${u.extract.inputTokens + u.compare.inputTokens} input tokens, ${u.extract.outputTokens + u.compare.outputTokens} output tokens\n`,
+      );
+    }
+
+    const json = renderJson(report);
+    if (opts.out) writeFileSync(opts.out, json);
+    if (opts.json) {
+      process.stdout.write(json);
+    } else {
+      const color = opts.color && Boolean(process.stdout.isTTY) && !process.env["NO_COLOR"];
+      process.stdout.write(
+        renderReport(report, {
+          color,
+          showConfirmed: !opts.hideConfirmed,
+          showUndocumented: !opts.hideUndocumented,
+          showRationale: Boolean(opts.rationale),
+        }),
+      );
+    }
+
+    const live = (cls: "drifted" | "unmatched") => report.verdicts.filter((v) => v.classification === cls && !v.suppressed).length;
+    const failing = opts.failOn === "none" ? 0 : opts.failOn === "drifted" ? live("drifted") : live("drifted") + live("unmatched");
+    if (failing > 0) process.exitCode = 1;
+  },
+);
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   const msg = err instanceof Error ? err.message : String(err);

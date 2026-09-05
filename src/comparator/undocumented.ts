@@ -39,7 +39,7 @@ export function findUndocumented(facts: CodeFact[], verdicts: Verdict[]): Undocu
     if (f.kind === "type" && ROOT_TYPES.has(f.name)) continue;
     if (f.kind === "type" && parentsWithCitedMembers.has(f.name)) continue;
     if (f.kind === "field" && (inputTypes.has(f.parentType) || parentsWithCitedMembers.has(f.id))) continue;
-    out.push({ factId: f.id });
+    out.push({ factId: f.id, suppressed: false });
   }
   out.sort((a, b) => (a.factId < b.factId ? -1 : 1));
   return out;

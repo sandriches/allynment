@@ -129,8 +129,10 @@ export interface Verdict {
   difference?: string;
   /** Comparator confidence in [0, 1]. */
   confidence: number;
-  /** True if the claim was listed in .specdriftignore. */
+  /** True if the claim was listed in the ignore file. */
   suppressed: boolean;
+  /** Reason given in the ignore file, if any. */
+  suppressionReason?: string;
   /** Short model explanation, for logs. Not shown in the default report. */
   rationale?: string;
 }
@@ -138,12 +140,27 @@ export interface Verdict {
 /** A code fact with no confirmed or drifted claim referring to it. */
 export interface UndocumentedFact {
   factId: string;
+  /** True if the fact was listed in the ignore file. */
+  suppressed: boolean;
+  suppressionReason?: string;
+}
+
+/** Identifies what produced a report, so two reports can be compared meaningfully. */
+export interface ReportProvenance {
+  tool: string;
+  version: string;
+  model: string;
+  extractPromptVersion: string;
+  comparePromptVersion: string;
 }
 
 export interface Report {
   generatedAt: string;
+  provenance: ReportProvenance;
   spec: string;
   sources: string[];
+  /** Path of the ignore file that was applied, if any. */
+  ignoreFile?: string;
   claims: Claim[];
   facts: CodeFact[];
   verdicts: Verdict[];

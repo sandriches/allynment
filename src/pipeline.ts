@@ -3,9 +3,13 @@ import { join } from "node:path";
 import { JsonFileCache, NoopCache } from "./cache.js";
 import { compareClaims, findUndocumented, type ClaimTrace } from "./comparator/index.js";
 import { extractGraphqlFacts } from "./extractors/code/index.js";
-import { chunkMarkdown, extractClaims, type SpecChunk } from "./extractors/spec/index.js";
+import { chunkMarkdown, extractClaims, PROMPT_VERSION, type SpecChunk } from "./extractors/spec/index.js";
+import { COMPARE_PROMPT_VERSION } from "./comparator/index.js";
 import type { LlmClient } from "./llm/client.js";
 import type { Report, Verdict } from "./types/index.js";
+
+export const TOOL_NAME = "spec-drift";
+export const TOOL_VERSION = "0.1.0";
 
 export interface PipelineOptions {
   specPath: string;
@@ -57,6 +61,13 @@ export async function runPipeline(opts: PipelineOptions): Promise<PipelineResult
 
   const report: Report = {
     generatedAt: (opts.now ?? (() => new Date().toISOString()))(),
+    provenance: {
+      tool: TOOL_NAME,
+      version: TOOL_VERSION,
+      model: opts.model,
+      extractPromptVersion: PROMPT_VERSION,
+      comparePromptVersion: COMPARE_PROMPT_VERSION,
+    },
     spec: opts.specPath,
     sources: [opts.schemaPath],
     claims: extracted.claims,

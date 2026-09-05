@@ -68,7 +68,8 @@ Two LLM stages means the same inputs can produce different reports, and a flappi
 - Structured outputs (`output_config.format` with a JSON schema) so responses are always schema-valid JSON. Current Claude models reject the `temperature` parameter, so determinism comes from a pinned model, a fixed prompt, a fixed effort level, and caching, not from sampling settings.
 - Cache extracted claims keyed by a content hash of the spec section. Re-run extraction only for sections whose text changed.
 - Cache comparator verdicts keyed by (claim hash, candidate code-fact hashes).
-- JSON output is sorted and stable so two runs on identical inputs produce a byte-identical report. Diffing reports is a feature, not an accident.
+- JSON output is sorted and stable so two runs on identical inputs produce a byte-identical report apart from `generatedAt`. Diffing reports is a feature, not an accident. Each report carries provenance (tool version, model, both prompt versions) so a diff between two reports can be read knowing whether the tool changed or the inputs did.
+- `check` exits non-zero on unsuppressed drift by default (`--fail-on drifted|unmatched|none`) so it can gate CI without further work.
 
 ## Retrieval (how the comparator narrows candidates)
 
@@ -83,7 +84,15 @@ Scoring notes learned from the fixtures: a full-name match must outrank a camelC
 
 ## Handling accepted differences
 
-Sometimes the spec is intentionally ahead of the code, or a difference is known and accepted. Without a way to say so, every run re-reports the same items and people stop reading. Support a `.specdriftignore` (or a block in the config file) that lists claim IDs or claim-text patterns to suppress, optionally with an expiry date and a reason. Suppressed items still appear in the JSON output with a `suppressed` flag so nothing is silently hidden.
+Sometimes the spec is intentionally ahead of the code, or a difference is known and accepted. Without a way to say so, every run re-reports the same items and people stop reading. `.specdriftignore` lists accepted differences, one rule per line:
+
+```
+claim:3f9c1a2b7d4e5f60                        # exact claim id from the JSON report
+text:*trackingNumber*   until=2026-12-31      # carrier integration ships in Q4
+fact:OrderConnection.totalCount               # internal field, not part of the public spec
+```
+
+`claim:` matches a claim id, `text:` matches claim text with `*` wildcards, `fact:` matches an undocumented fact id. A trailing `# comment` is the reason and is shown in the report. `until=` expires a rule, and the CLI warns about expired rules and rules that matched nothing, so the file cannot silently rot. Only drifted, unmatched and undocumented items can be suppressed. Suppressed items still appear in the JSON output with a `suppressed` flag and are listed at the end of the terminal report, so nothing is silently hidden.
 
 ## Cost and token budgeting
 
@@ -181,7 +190,7 @@ The MVP checklist above is grouped by component. This section orders the work in
 - Reverse pass: facts with no confirmed or drifted claim become `undocumented`.
 - **Done when:** the eval harness runs end to end on both fixtures and reports precision and recall per classification. Set a bar (for example no false drift on the clean fixture, all expected drift found on the other) and iterate on prompts until it is met.
 
-### Step 6 — Report and CLI
+### Step 6 — Report and CLI ✅
 - Terminal report grouped drifted, unmatched, undocumented, not checkable, confirmed.
 - `--json` output, sorted and stable. Test that two runs produce identical bytes.
 - `.specdriftignore` with `suppressed` flag in JSON.
