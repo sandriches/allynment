@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "1a74b0e6a9e049f063b842b8a460aa18a90d6dcb0ac7bd1385aeb10e0e2d5a84",
+  "response": {
+    "text": "{\"classification\":\"unmatched\",\"matched_fact_ids\":[],\"difference\":\"\",\"confidence\":0.85,\"rationale\":\"No candidate fact covers a Refund type; only Money.amount is present, which is a different parent.\"}",
+    "inputTokens": 1266,
+    "outputTokens": 93,
+    "model": "claude-opus-5"
+  }
+}

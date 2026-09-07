@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "af8646f8dcb89b7109e6971b2aca3a1684462f92f5732868c39ea6c9594fdaed",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"User.email\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Schema shows String! which is non-null, matching the claim.\"}",
+    "inputTokens": 1766,
+    "outputTokens": 68,
+    "model": "claude-opus-5"
+  }
+}

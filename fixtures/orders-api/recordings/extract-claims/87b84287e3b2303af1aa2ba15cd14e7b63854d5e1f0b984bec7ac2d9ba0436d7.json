@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "87b84287e3b2303af1aa2ba15cd14e7b63854d5e1f0b984bec7ac2d9ba0436d7",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"The `orders` query returns a paginated connection.\",\"claim_type\":\"field_type\",\"confidence\":0.8,\"mentions\":[\"orders\"],\"line_start\":37,\"line_end\":37},{\"text\":\"The `orders` query exists.\",\"claim_type\":\"field_exists\",\"confidence\":0.8,\"mentions\":[\"orders\"],\"line_start\":37,\"line_end\":37},{\"text\":\"The `orders` query accepts `first` and `after` arguments for cursor-based pagination.\",\"claim_type\":\"field_args\",\"confidence\":0.95,\"mentions\":[\"orders\",\"first\",\"after\"],\"line_start\":37,\"line_end\":37},{\"text\":\"The `orders` query can be filtered by `customerId`.\",\"claim_type\":\"field_args\",\"confidence\":0.95,\"mentions\":[\"orders\",\"customerId\"],\"line_start\":39,\"line_end\":39}]}",
+    "inputTokens": 1376,
+    "outputTokens": 282,
+    "model": "claude-opus-5"
+  }
+}

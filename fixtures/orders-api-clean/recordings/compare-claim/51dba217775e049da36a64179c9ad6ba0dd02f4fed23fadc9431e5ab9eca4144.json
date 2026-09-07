@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "51dba217775e049da36a64179c9ad6ba0dd02f4fed23fadc9431e5ab9eca4144",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"User.email\",\"User\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"User.email exists as String! on the User object.\"}",
+    "inputTokens": 1761,
+    "outputTokens": 64,
+    "model": "claude-opus-5"
+  }
+}

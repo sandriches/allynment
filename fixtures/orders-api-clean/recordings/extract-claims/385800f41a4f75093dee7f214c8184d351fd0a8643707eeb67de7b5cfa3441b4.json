@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "385800f41a4f75093dee7f214c8184d351fd0a8643707eeb67de7b5cfa3441b4",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"A User type exists.\",\"claim_type\":\"type_exists\",\"confidence\":0.9,\"mentions\":[\"User\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.email is required.\",\"claim_type\":\"field_nullability\",\"confidence\":0.9,\"mentions\":[\"User\",\"email\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User has an email field.\",\"claim_type\":\"field_exists\",\"confidence\":0.8,\"mentions\":[\"User\",\"email\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.name is optional.\",\"claim_type\":\"field_nullability\",\"confidence\":0.9,\"mentions\":[\"User\",\"name\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.legacyId is deprecated.\",\"claim_type\":\"deprecation\",\"confidence\":0.95,\"mentions\":[\"User\",\"legacyId\"],\"line_start\":9,\"line_end\":9},{\"text\":\"User has an id field that clients should use instead of legacyId.\",\"claim_type\":\"field_exists\",\"confidence\":0.75,\"mentions\":[\"User\",\"id\",\"legacyId\"],\"line_start\":9,\"line_end\":9}]}",
+    "inputTokens": 1367,
+    "outputTokens": 381,
+    "model": "claude-opus-5"
+  }
+}

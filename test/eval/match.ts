@@ -21,7 +21,7 @@ export interface MatchResult {
 const STOPWORDS = new Set([
   "a", "an", "the", "is", "are", "be", "has", "have", "of", "on", "in", "to", "and", "or", "for", "with", "by", "at",
   "it", "its", "this", "that", "there", "which", "as", "can", "will", "was", "were", "type", "field", "value", "values",
-  "query", "mutation", "includes", "include", "accepts", "accept", "argument", "arguments",
+  "query", "mutation", "includes", "include", "accepts", "accept", "argument", "arguments", "exists", "every", "there",
 ]);
 
 /** Lowercased content words, with dotted identifiers split so "Order.status" also yields "order" and "status". */
@@ -37,16 +37,23 @@ export function words(text: string): Set<string> {
   return out;
 }
 
-/** Identifier-looking tokens: contain a capital letter, an underscore, or a dot. Lowercased for comparison. */
+/**
+ * Identifier-looking tokens: contain a capital letter, an underscore, or a dot. Lowercased for comparison.
+ * The first word of the text only counts if it is more than a plain Capitalised word ("Every", "Clients"):
+ * camelCase, ALLCAPS, dotted, or underscored.
+ */
 export function identifiers(text: string, factIds: string[] = []): Set<string> {
   const out = new Set<string>();
-  for (const tok of text.split(/[^A-Za-z0-9_.]+/)) {
-    if (!/[A-Z_.]/.test(tok)) continue;
+  const toks = text.split(/[^A-Za-z0-9_.]+/).filter(Boolean);
+  toks.forEach((tok, i) => {
+    if (!/[A-Z_.]/.test(tok)) return;
+    const plainCapitalised = /^[A-Z][a-z]+$/.test(tok);
+    if (i === 0 && plainCapitalised) return;
     for (const part of tok.split(".")) {
       const w = part.toLowerCase();
       if (w && !STOPWORDS.has(w)) out.add(w);
     }
-  }
+  });
   for (const id of factIds) for (const part of id.split(/[.()]/)) if (part) out.add(part.toLowerCase());
   return out;
 }
@@ -62,26 +69,38 @@ function samePath(a: string[], b: string[]): boolean {
   return a.length === b.length && a.every((x, i) => x === b[i]);
 }
 
-/** Score how well an extracted claim matches an expected one, ignoring claim type. */
+/**
+ * Score how well an extracted claim matches an expected one.
+ *
+ * The expected text is a short canonical wording; the extracted text may be a longer paraphrase.
+ * So the main term is coverage (how much of the expected wording the claim contains), with a small
+ * Jaccard term so a tighter paraphrase wins over a noisier one, an identifier term, and a small
+ * bonus for the same claim type. The type bonus is deliberately small so a wrong-type extraction
+ * is still matched (and reported as wrong_type) when it is the only candidate.
+ */
 export function score(expected: ExpectedClaim, claim: Claim): number {
   if (!samePath(expected.headingPath, claim.source.headingPath)) return 0;
   const ew = words(expected.text);
   const cw = new Set([...words(claim.text), ...claim.mentions.flatMap((m) => [...words(m)])]);
+  let covered = 0;
+  for (const w of ew) if (cw.has(w)) covered++;
+  const coverage = ew.size === 0 ? 0 : covered / ew.size;
   const overlap = jaccard(ew, cw);
 
   const ids = identifiers(expected.text, expected.factIds);
   let idHits = 0;
   for (const id of ids) if (cw.has(id)) idHits++;
-  const idScore = ids.size === 0 ? overlap : idHits / ids.size;
+  const idScore = ids.size === 0 ? coverage : idHits / ids.size;
 
-  return 0.5 * overlap + 0.5 * idScore;
+  const typeBonus = claim.claimType === expected.claimType ? 0.1 : 0;
+  return 0.5 * coverage + 0.2 * overlap + 0.5 * idScore + typeBonus;
 }
 
 /**
  * Match each expected claim to the best extracted claim in the same section.
  * Each extracted claim can satisfy at most one expected claim.
  */
-export function matchClaims(expected: ExpectedClaim[], extracted: Claim[], threshold = 0.45): MatchResult[] {
+export function matchClaims(expected: ExpectedClaim[], extracted: Claim[], threshold = 0.5): MatchResult[] {
   const used = new Set<string>();
   const results: MatchResult[] = [];
 

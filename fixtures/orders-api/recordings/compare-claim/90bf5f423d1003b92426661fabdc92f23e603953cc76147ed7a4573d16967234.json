@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "90bf5f423d1003b92426661fabdc92f23e603953cc76147ed7a4573d16967234",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"User\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"The schema defines an object type named User.\"}",
+    "inputTokens": 1759,
+    "outputTokens": 58,
+    "model": "claude-opus-5"
+  }
+}

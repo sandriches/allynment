@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "bcc3518553b523b01ff8b936c7e0d0126bc35f757d7c1a95370f55868fa49344",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order.total\",\"Money\"],\"difference\":\"\",\"confidence\":0.95,\"rationale\":\"Order.total is Money! whose named type is Money, matching the claim about the value type.\"}",
+    "inputTokens": 1842,
+    "outputTokens": 79,
+    "model": "claude-opus-5"
+  }
+}

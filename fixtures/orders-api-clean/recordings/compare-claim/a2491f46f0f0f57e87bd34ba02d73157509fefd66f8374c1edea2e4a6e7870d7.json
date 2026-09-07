@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "a2491f46f0f0f57e87bd34ba02d73157509fefd66f8374c1edea2e4a6e7870d7",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"User.email\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Schema declares User.email as String!, which is non-null as claimed.\"}",
+    "inputTokens": 1762,
+    "outputTokens": 71,
+    "model": "claude-opus-5"
+  }
+}

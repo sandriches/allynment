@@ -113,7 +113,7 @@
       "differenceHint": "OrderStatus has no REFUNDED value"
     },
     {
-      "text": "A Refund type records money returned to the customer",
+      "text": "A Refund type exists",
       "claimType": "type_exists",
       "headingPath": ["Orders API", "Orders", "Refunds"],
       "expected": "unmatched"

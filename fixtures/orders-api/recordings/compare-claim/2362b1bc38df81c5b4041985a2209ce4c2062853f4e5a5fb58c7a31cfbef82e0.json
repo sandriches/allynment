@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "2362b1bc38df81c5b4041985a2209ce4c2062853f4e5a5fb58c7a31cfbef82e0",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order.total\",\"Order\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Order.total exists as Money! on the Order object.\"}",
+    "inputTokens": 1858,
+    "outputTokens": 69,
+    "model": "claude-opus-5"
+  }
+}

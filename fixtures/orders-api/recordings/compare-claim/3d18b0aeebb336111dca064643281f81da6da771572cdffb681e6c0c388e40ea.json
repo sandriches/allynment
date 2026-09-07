@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "3d18b0aeebb336111dca064643281f81da6da771572cdffb681e6c0c388e40ea",
+  "response": {
+    "text": "{\"classification\":\"drifted\",\"matched_fact_ids\":[\"Order.shippingAddress\"],\"difference\":\"Order.shippingAddress is nullable (Address), not non-null (Address!).\",\"confidence\":0.97,\"rationale\":\"The field exists but the schema declares it as nullable.\"}",
+    "inputTokens": 1857,
+    "outputTokens": 96,
+    "model": "claude-opus-5"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "5028da5e87a141a130e7a27526eca76bd51c96fa8c1d3f1618925cadabac1acf",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"User.legacyId\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Field is marked deprecated with reason \\\"Use id instead\\\".\"}",
+    "inputTokens": 1750,
+    "outputTokens": 74,
+    "model": "claude-opus-5"
+  }
+}

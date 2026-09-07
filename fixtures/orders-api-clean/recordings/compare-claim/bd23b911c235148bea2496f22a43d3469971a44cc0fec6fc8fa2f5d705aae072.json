@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "bd23b911c235148bea2496f22a43d3469971a44cc0fec6fc8fa2f5d705aae072",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order.status\",\"Order\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Order.status exists as OrderStatus!, matching the existence claim.\"}",
+    "inputTokens": 1848,
+    "outputTokens": 76,
+    "model": "claude-opus-5"
+  }
+}

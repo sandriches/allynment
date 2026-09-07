@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "c0590b8784d8c7c99c939ff5ce8378a7cf0cb35e8e1b8314b70f6b6a0501d90f",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order.total\",\"Money\"],\"difference\":\"\",\"confidence\":0.95,\"rationale\":\"Order.total is Money! and Money is documented as amount in minor units with currency code.\"}",
+    "inputTokens": 1841,
+    "outputTokens": 79,
+    "model": "claude-opus-5"
+  }
+}

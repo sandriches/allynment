@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "1c58cb66d8766aae38a02c8f428b757d7f863944dfb5017c4be1545846819cb5",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Query.orders(first)\",\"Query.orders(after)\",\"Query.orders(status)\"],\"difference\":\"\",\"confidence\":0.97,\"rationale\":\"All three named arguments exist on Query.orders as stated.\"}",
+    "inputTokens": 1878,
+    "outputTokens": 90,
+    "model": "claude-opus-5"
+  }
+}

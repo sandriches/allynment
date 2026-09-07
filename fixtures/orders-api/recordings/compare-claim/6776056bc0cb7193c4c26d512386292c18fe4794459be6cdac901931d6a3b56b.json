@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "6776056bc0cb7193c4c26d512386292c18fe4794459be6cdac901931d6a3b56b",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"OrderStatus\",\"OrderStatus.PENDING\",\"OrderStatus.PAID\",\"OrderStatus.SHIPPED\",\"OrderStatus.DELIVERED\",\"OrderStatus.CANCELLED\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"All five listed values are present in OrderStatus.\"}",
+    "inputTokens": 1842,
+    "outputTokens": 132,
+    "model": "claude-opus-5"
+  }
+}

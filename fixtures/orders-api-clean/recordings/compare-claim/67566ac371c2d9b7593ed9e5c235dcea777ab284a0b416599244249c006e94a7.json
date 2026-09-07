@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "67566ac371c2d9b7593ed9e5c235dcea777ab284a0b416599244249c006e94a7",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"User.name\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Schema shows User.name as String with nullable true, matching the optional claim.\"}",
+    "inputTokens": 1763,
+    "outputTokens": 73,
+    "model": "claude-opus-5"
+  }
+}

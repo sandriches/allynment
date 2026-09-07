@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "fee94fd6a72d7a8e5cc7e0cc96d0749b87d5210c3e3d9ea095ac5fc470c1fa39",
+  "response": {
+    "text": "{\"classification\":\"drifted\",\"matched_fact_ids\":[\"Order\"],\"difference\":\"Order has no trackingNumber field; its fields are customer, id, items, note, placedAt, shippingAddress, status, total.\",\"confidence\":0.95,\"rationale\":\"Parent type exists but the named member is absent from its field list.\"}",
+    "inputTokens": 1863,
+    "outputTokens": 106,
+    "model": "claude-opus-5"
+  }
+}

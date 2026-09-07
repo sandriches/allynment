@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "421d11532929d24381be6b09b08d38bcf80a28d472eb848201dee9af1baaec7a",
+  "response": {
+    "text": "{\"classification\":\"drifted\",\"matched_fact_ids\":[\"Order.note\"],\"difference\":\"Order.note exists as a nullable String but is not deprecated in the schema.\",\"confidence\":0.95,\"rationale\":\"The field is present with deprecated: false, contradicting the deprecation claim.\"}",
+    "inputTokens": 1860,
+    "outputTokens": 97,
+    "model": "claude-opus-5"
+  }
+}

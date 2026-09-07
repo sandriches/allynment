@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "53161e3a80af88b56dd7733018ed72cf97852dc15d38d938ed54ab8012b9955d",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"The OrderStatus enum includes PENDING, PAID, SHIPPED, DELIVERED and CANCELLED.\",\"claim_type\":\"enum_values\",\"confidence\":0.98,\"mentions\":[\"OrderStatus\",\"PENDING\",\"PAID\",\"SHIPPED\",\"DELIVERED\",\"CANCELLED\"],\"line_start\":21,\"line_end\":21}]}",
+    "inputTokens": 1352,
+    "outputTokens": 134,
+    "model": "claude-opus-5"
+  }
+}

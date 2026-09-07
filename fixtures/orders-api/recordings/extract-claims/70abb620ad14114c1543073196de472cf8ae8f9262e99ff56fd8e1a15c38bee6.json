@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "70abb620ad14114c1543073196de472cf8ae8f9262e99ff56fd8e1a15c38bee6",
+  "response": {
+    "text": "{\"claims\":[]}",
+    "inputTokens": 1325,
+    "outputTokens": 20,
+    "model": "claude-opus-5"
+  }
+}

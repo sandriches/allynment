@@ -3,7 +3,7 @@ import type { SpecChunk } from "./markdown.js";
 import { numberedBody } from "./markdown.js";
 
 /** Bump when the prompt or response schema changes so cached extractions are invalidated. */
-export const PROMPT_VERSION = "1";
+export const PROMPT_VERSION = "2";
 
 export const EXTRACT_PURPOSE = "extract-claims";
 
@@ -56,7 +56,11 @@ export const RESPONSE_SCHEMA = {
   },
 } as const;
 
+/**
+ * The file path is deliberately not part of the prompt: it would tie recordings and caches to one
+ * machine's directory layout without helping the model.
+ */
 export function buildUserPrompt(chunk: SpecChunk): string {
   const heading = chunk.headingPath.length > 0 ? chunk.headingPath.join(" > ") : "(preamble, no heading)";
-  return `Document: ${chunk.file}\nSection: ${heading}\n\n${numberedBody(chunk)}`;
+  return `Section: ${heading}\n\n${numberedBody(chunk)}`;
 }

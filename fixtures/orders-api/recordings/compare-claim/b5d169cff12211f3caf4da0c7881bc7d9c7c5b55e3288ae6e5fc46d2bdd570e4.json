@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "b5d169cff12211f3caf4da0c7881bc7d9c7c5b55e3288ae6e5fc46d2bdd570e4",
+  "response": {
+    "text": "{\"classification\":\"drifted\",\"matched_fact_ids\":[\"Query.orders\"],\"difference\":\"Query.orders only accepts after, first and status arguments; there is no customerId argument.\",\"confidence\":0.95,\"rationale\":\"The orders query exists but lacks the claimed customerId filter argument.\"}",
+    "inputTokens": 1833,
+    "outputTokens": 99,
+    "model": "claude-opus-5"
+  }
+}

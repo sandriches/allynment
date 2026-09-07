@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "5ca7a2c81e7ef10e882f0fae2773a77e0b132ffeb3aa09f12dccb4f8fdde005a",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"There is an `Order` type representing a single purchase.\",\"claim_type\":\"type_exists\",\"confidence\":0.95,\"mentions\":[\"Order\"],\"line_start\":13,\"line_end\":13},{\"text\":\"`Order` has a `status` field.\",\"claim_type\":\"field_exists\",\"confidence\":0.95,\"mentions\":[\"Order\",\"status\"],\"line_start\":13,\"line_end\":13},{\"text\":\"`Order.total` is a `Money` value.\",\"claim_type\":\"field_type\",\"confidence\":0.95,\"mentions\":[\"Order\",\"total\",\"Money\"],\"line_start\":13,\"line_end\":13},{\"text\":\"`Order.placedAt` is a `DateTime`.\",\"claim_type\":\"field_type\",\"confidence\":0.95,\"mentions\":[\"Order\",\"placedAt\",\"DateTime\"],\"line_start\":15,\"line_end\":15},{\"text\":\"`Order.shippingAddress` is optional (nullable) at the schema level.\",\"claim_type\":\"field_nullability\",\"confidence\":0.92,\"mentions\":[\"Order\",\"shippingAddress\"],\"line_start\":17,\"line_end\":17},{\"text\":\"`Order.shippingAddress` is populated after payment.\",\"claim_type\":\"behaviour\",\"confidence\":0.8,\"mentions\":[\"Order\",\"shippingAddress\"],\"line_start\":17,\"line_end\":17}]}",
+    "inputTokens": 1406,
+    "outputTokens": 436,
+    "model": "claude-opus-5"
+  }
+}

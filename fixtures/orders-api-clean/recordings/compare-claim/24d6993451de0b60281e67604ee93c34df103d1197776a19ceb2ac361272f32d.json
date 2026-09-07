@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "24d6993451de0b60281e67604ee93c34df103d1197776a19ceb2ac361272f32d",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order\"],\"difference\":\"\",\"confidence\":0.98,\"rationale\":\"Order object exists and is described as a single purchase made by a user.\"}",
+    "inputTokens": 1770,
+    "outputTokens": 67,
+    "model": "claude-opus-5"
+  }
+}

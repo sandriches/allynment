@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "6ac6abeab773d6b058aea3692d8d2e638e41627c6951e76a9ffa8dd35d50ca73",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order.shippingAddress\",\"Order\"],\"difference\":\"\",\"confidence\":0.98,\"rationale\":\"Order has a shippingAddress field of type Address; claim makes no nullability or type assertion.\"}",
+    "inputTokens": 1852,
+    "outputTokens": 88,
+    "model": "claude-opus-5"
+  }
+}

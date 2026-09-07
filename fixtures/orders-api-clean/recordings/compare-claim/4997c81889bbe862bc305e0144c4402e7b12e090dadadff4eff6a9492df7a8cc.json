@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "4997c81889bbe862bc305e0144c4402e7b12e090dadadff4eff6a9492df7a8cc",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Order.shippingAddress\"],\"difference\":\"\",\"confidence\":0.99,\"rationale\":\"Schema shows Order.shippingAddress: Address with nullable true, matching the claim.\"}",
+    "inputTokens": 1862,
+    "outputTokens": 84,
+    "model": "claude-opus-5"
+  }
+}

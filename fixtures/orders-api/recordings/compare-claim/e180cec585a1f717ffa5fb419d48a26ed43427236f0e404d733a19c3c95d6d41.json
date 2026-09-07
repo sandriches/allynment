@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "e180cec585a1f717ffa5fb419d48a26ed43427236f0e404d733a19c3c95d6d41",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Query.orders\"],\"difference\":\"\",\"confidence\":0.98,\"rationale\":\"Query.orders is present in the schema returning OrderConnection!.\"}",
+    "inputTokens": 1793,
+    "outputTokens": 72,
+    "model": "claude-opus-5"
+  }
+}

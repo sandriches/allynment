@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "dba7492e379f57983f072520668badf62b3208d3f61c5105077710f4e63e5b27",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"The OrderStatus enum includes PENDING, PAID, SHIPPED, DELIVERED and CANCELLED.\",\"claim_type\":\"enum_values\",\"confidence\":0.98,\"mentions\":[\"OrderStatus\",\"PENDING\",\"PAID\",\"SHIPPED\",\"DELIVERED\",\"CANCELLED\"],\"line_start\":27,\"line_end\":27},{\"text\":\"The OrderStatus enum includes REFUNDED.\",\"claim_type\":\"enum_values\",\"confidence\":0.95,\"mentions\":[\"OrderStatus\",\"REFUNDED\"],\"line_start\":29,\"line_end\":29},{\"text\":\"OrderStatus is set to REFUNDED when a refund has been fully processed.\",\"claim_type\":\"behaviour\",\"confidence\":0.85,\"mentions\":[\"OrderStatus\",\"REFUNDED\"],\"line_start\":29,\"line_end\":29}]}",
+    "inputTokens": 1394,
+    "outputTokens": 298,
+    "model": "claude-opus-5"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "f02de6f75d52e6ce6c3372752829c75a1b820159539fd73928c613574b8161b1",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"A User type exists.\",\"claim_type\":\"type_exists\",\"confidence\":0.92,\"mentions\":[\"User\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User has an email field.\",\"claim_type\":\"field_exists\",\"confidence\":0.9,\"mentions\":[\"User\",\"email\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.email is required (non-null).\",\"claim_type\":\"field_nullability\",\"confidence\":0.92,\"mentions\":[\"User\",\"email\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.email is unique.\",\"claim_type\":\"limit_or_policy\",\"confidence\":0.75,\"mentions\":[\"User\",\"email\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.name is optional.\",\"claim_type\":\"field_nullability\",\"confidence\":0.9,\"mentions\":[\"User\",\"name\"],\"line_start\":7,\"line_end\":7},{\"text\":\"Some users sign up through social login without providing a name.\",\"claim_type\":\"behaviour\",\"confidence\":0.7,\"mentions\":[\"name\"],\"line_start\":7,\"line_end\":7},{\"text\":\"User.legacyId is deprecated and will be removed in a future release.\",\"claim_type\":\"deprecation\",\"confidence\":0.95,\"mentions\":[\"User\",\"legacyId\"],\"line_start\":9,\"line_end\":9},{\"text\":\"Clients should use User.id instead of User.legacyId.\",\"claim_type\":\"field_exists\",\"confidence\":0.7,\"mentions\":[\"User\",\"id\",\"legacyId\"],\"line_start\":9,\"line_end\":9}]}",
+    "inputTokens": 1389,
+    "outputTokens": 517,
+    "model": "claude-opus-5"
+  }
+}

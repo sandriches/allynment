@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "d775d51ae383cb9d16d330ab98514717df01b065ecbb4db24047b4bc05616bfd",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"Users can cancel an order at any point until it has shipped.\",\"claim_type\":\"behaviour\",\"confidence\":0.95,\"mentions\":[\"order\"],\"line_start\":43,\"line_end\":43},{\"text\":\"Customers receive a confirmation email when an order is shipped.\",\"claim_type\":\"behaviour\",\"confidence\":0.95,\"mentions\":[\"order\"],\"line_start\":45,\"line_end\":45}]}",
+    "inputTokens": 1342,
+    "outputTokens": 143,
+    "model": "claude-opus-5"
+  }
+}

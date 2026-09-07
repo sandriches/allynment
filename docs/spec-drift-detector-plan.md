@@ -107,6 +107,10 @@ There is no way to know whether the comparator is any good without a labelled se
 - A test runs the full pipeline against each fixture and reports precision/recall per classification. Run on every change.
 - This fixture set doubles as the worked example in the README, so the effort pays for itself twice.
 
+First recorded run (2026-09-07, `claude-opus-5`, medium effort): 51 model calls, about 86k input and 7k output tokens for both fixtures. Extraction found every labelled claim; the comparator classified every one correctly, including all six drifted claims with usable difference text, and produced zero false positives on the clean fixture. The eval failures on that run were all in the eval harness itself, not the tool: the claim matcher used Jaccard overlap, which punished the model's longer paraphrases, and treated sentence-initial capitalised words ("Every", "Clients") as identifiers. It now scores by coverage of the canonical wording with a small type bonus. One label was also changed: the spec sentence "A `Refund` type records money returned to the customer" bundles a type-exists claim with a description, and the model rightly split it, so the label is now "A Refund type exists".
+
+Lesson worth keeping: when an eval fails, check the harness before the prompt. Two of the four failures looked like extraction misses and were matcher bugs.
+
 ## MVP scope
 
 Goal: point the tool at one real spec doc and one real (or realistic sample) codebase, and get a genuinely useful drift report — not a demo that only works on a hand-crafted example.
@@ -169,7 +173,7 @@ The MVP checklist above is grouped by component. This section orders the work in
 - Snapshot test against both fixture schemas.
 - **Done when:** `spec-drift facts --schema fixtures/orders-api/schema.graphql` prints the fact list and the snapshot test is green. No LLM involved.
 
-### Step 3 — Spec extractor ✅ (code) / ⏳ (recordings)
+### Step 3 — Spec extractor ✅
 - `remark` parses `spec.md`, chunks by heading, records line ranges.
 - Extraction prompt asks for `Claim[]` per chunk, constrained to the taxonomy, with source location and confidence.
 - Content-hash cache in `.spec-drift/cache/`.
@@ -183,7 +187,7 @@ The MVP checklist above is grouped by component. This section orders the work in
 - Test: for every checkable claim in the fixtures, the correct fact appears in the candidate list. This is a recall test and it should be at or near 100 percent before moving on, because the comparator cannot recover from a retrieval miss.
 - **Done when:** the recall test is green and `--verbose` prints candidates per claim.
 
-### Step 5 — Comparator ✅ (code) / ⏳ (recordings + eval bar)
+### Step 5 — Comparator ✅
 - Comparison prompt takes one claim and its candidates, returns classification plus a one-sentence "what differs" for drifted.
 - Not-checkable claims skip the LLM entirely and are classified by `claim_type`.
 - Verdict cache keyed by claim hash plus candidate hashes.

@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "4f0c37cf0b3ff0dc15eb80566eb0773efb984df111bb4ff16247666ee79c3995",
+  "response": {
+    "text": "{\"classification\":\"confirmed\",\"matched_fact_ids\":[\"Mutation.cancelOrder\"],\"difference\":\"\",\"confidence\":0.98,\"rationale\":\"Mutation.cancelOrder exists in the schema, returning Order!.\"}",
+    "inputTokens": 1870,
+    "outputTokens": 81,
+    "model": "claude-opus-5"
+  }
+}

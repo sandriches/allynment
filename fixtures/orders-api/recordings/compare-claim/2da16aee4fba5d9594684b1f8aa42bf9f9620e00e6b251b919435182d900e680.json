@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "2da16aee4fba5d9594684b1f8aa42bf9f9620e00e6b251b919435182d900e680",
+  "response": {
+    "text": "{\"classification\":\"drifted\",\"matched_fact_ids\":[\"OrderStatus\"],\"difference\":\"OrderStatus contains CANCELLED, DELIVERED, PAID, PENDING, SHIPPED; REFUNDED is not present.\",\"confidence\":0.97,\"rationale\":\"Enum exists but lacks the claimed value.\"}",
+    "inputTokens": 1868,
+    "outputTokens": 114,
+    "model": "claude-opus-5"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "purpose": "extract-claims",
+  "requestHash": "4455008d6b4a05e43490753a4fa237341ad7c617bd8438751afea2fc88156fc9",
+  "response": {
+    "text": "{\"claims\":[{\"text\":\"A Refund type exists.\",\"claim_type\":\"type_exists\",\"confidence\":0.95,\"mentions\":[\"Refund\"],\"line_start\":33,\"line_end\":33},{\"text\":\"Refund records money returned to the customer.\",\"claim_type\":\"behaviour\",\"confidence\":0.7,\"mentions\":[\"Refund\"],\"line_start\":33,\"line_end\":33},{\"text\":\"Refund has an amount field.\",\"claim_type\":\"field_exists\",\"confidence\":0.9,\"mentions\":[\"Refund\",\"amount\"],\"line_start\":33,\"line_end\":33},{\"text\":\"Refund has a reason field.\",\"claim_type\":\"field_exists\",\"confidence\":0.9,\"mentions\":[\"Refund\",\"reason\"],\"line_start\":33,\"line_end\":33}]}",
+    "inputTokens": 1322,
+    "outputTokens": 283,
+    "model": "claude-opus-5"
+  }
+}

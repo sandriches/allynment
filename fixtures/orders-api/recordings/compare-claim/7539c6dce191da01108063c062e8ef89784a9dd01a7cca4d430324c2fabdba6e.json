@@ -1,0 +1,10 @@
+{
+  "purpose": "compare-claim",
+  "requestHash": "7539c6dce191da01108063c062e8ef89784a9dd01a7cca4d430324c2fabdba6e",
+  "response": {
+    "text": "{\"classification\":\"drifted\",\"matched_fact_ids\":[\"Order.placedAt\"],\"difference\":\"Order.placedAt is DateTime! (non-null DateTime), not String.\",\"confidence\":0.97,\"rationale\":\"Field exists but its named type is DateTime and non-nullable, not String.\"}",
+    "inputTokens": 1863,
+    "outputTokens": 100,
+    "model": "claude-opus-5"
+  }
+}
