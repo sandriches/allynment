@@ -201,10 +201,11 @@ The MVP checklist above is grouped by component. This section orders the work in
 - `spec-drift check --spec ... --schema ...` wires the whole pipeline together.
 - **Done when:** running `check` against the fixture produces a report a stranger could act on without reading the code.
 
-### Step 7 — Docs and worked example
+### Step 7 — Docs and worked example ✅
 - README: deterministic-vs-LLM split, determinism guarantees, false-positive patterns, the not-checkable bucket, and the fixture as a worked example with actual output pasted in.
 - Short write-up in `/docs` on the retrieval and matching approach.
 - **Done when:** someone who has never seen the project can run the worked example from the README and get the same output.
+- Verified 2026-09-07 by copying the working tree to a clean directory with no credentials: `npm install`, `npm test` (125 passing), `npm run example` and `npm run example:clean` all work, and the README's pasted output was checked line by line against the real run. Design note on retrieval and comparison is in `docs/matching.md`.
 
 ### Step 8 — Real-world trial
 - Point the tool at one real spec and one real schema, not a fixture.

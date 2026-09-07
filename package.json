@@ -14,7 +14,10 @@
     "dev": "tsx src/cli/index.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "example": "tsx src/cli/index.ts check --spec fixtures/orders-api/spec.md --schema fixtures/orders-api/schema.graphql --llm mock --recordings fixtures/orders-api/recordings --no-cache",
+    "example:clean": "tsx src/cli/index.ts check --spec fixtures/orders-api-clean/spec.md --schema fixtures/orders-api/schema.graphql --llm mock --recordings fixtures/orders-api-clean/recordings --no-cache",
+    "record-fixtures": "tsx src/cli/index.ts record-fixtures"
   },
   "engines": {
     "node": ">=20"
